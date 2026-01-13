@@ -1,5 +1,5 @@
 import { EmailConfiguration, AirflowConfig, RecipientConfig } from '../models';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { TemplateService } from './TemplateService';
 import { RecipientService } from './RecipientService';
 import { ReportService } from './ReportService';
@@ -20,7 +20,7 @@ export class ConfigurationService {
       throw new Error('Configuration label is required');
     }
 
-    const id = uuidv4();
+    const id = randomUUID();
     const now = new Date();
 
     // Create empty template

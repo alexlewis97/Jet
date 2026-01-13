@@ -1,12 +1,12 @@
 import { AggregationConfig, AggregationDef, ComputedAggregation, AggregationType } from '../models';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class AggregationService {
   private aggregations: Map<string, AggregationConfig[]> = new Map();
 
   addAggregation(configId: string, aggregation: AggregationDef): AggregationConfig {
     const config: AggregationConfig = {
-      id: uuidv4(),
+      id: randomUUID(),
       configId,
       column: aggregation.column,
       type: aggregation.type,

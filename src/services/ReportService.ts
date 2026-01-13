@@ -1,6 +1,6 @@
 import { ReportConfig, TableReference, ColumnInfo } from '../models';
 import { arrayToCsv } from '../utils';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class ReportService {
   private configs: Map<string, ReportConfig> = new Map();

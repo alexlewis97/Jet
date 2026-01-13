@@ -1,5 +1,5 @@
 import { Template, ValidationResult } from '../models';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class TemplateService {
   private templates: Map<string, Template> = new Map();
@@ -12,7 +12,7 @@ export class TemplateService {
 
     const now = new Date();
     const template: Template = {
-      id: uuidv4(),
+      id: randomUUID(),
       content,
       createdAt: now,
       updatedAt: now,

@@ -1,6 +1,6 @@
 import { RecipientConfig, TableReference } from '../models';
 import { validateEmail } from '../validators';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class RecipientService {
   private configs: Map<string, RecipientConfig> = new Map();

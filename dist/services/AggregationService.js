@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AggregationService = void 0;
-const uuid_1 = require("uuid");
+const crypto_1 = require("crypto");
 class AggregationService {
     constructor() {
         this.aggregations = new Map();
     }
     addAggregation(configId, aggregation) {
         const config = {
-            id: (0, uuid_1.v4)(),
+            id: (0, crypto_1.randomUUID)(),
             configId,
             column: aggregation.column,
             type: aggregation.type,

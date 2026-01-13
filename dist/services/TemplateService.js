@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TemplateService = void 0;
-const uuid_1 = require("uuid");
+const crypto_1 = require("crypto");
 class TemplateService {
     constructor() {
         this.templates = new Map();
@@ -13,7 +13,7 @@ class TemplateService {
         }
         const now = new Date();
         const template = {
-            id: (0, uuid_1.v4)(),
+            id: (0, crypto_1.randomUUID)(),
             content,
             createdAt: now,
             updatedAt: now,

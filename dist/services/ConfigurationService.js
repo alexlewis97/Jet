@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigurationService = void 0;
-const uuid_1 = require("uuid");
+const crypto_1 = require("crypto");
 class ConfigurationService {
     constructor(templateService, recipientService, reportService, aggregationService) {
         this.templateService = templateService;
@@ -14,7 +14,7 @@ class ConfigurationService {
         if (!label || label.trim().length === 0) {
             throw new Error('Configuration label is required');
         }
-        const id = (0, uuid_1.v4)();
+        const id = (0, crypto_1.randomUUID)();
         const now = new Date();
         // Create empty template
         const template = this.templateService.createTemplate('<html><body></body></html>');
