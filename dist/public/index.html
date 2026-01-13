@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jet - Email Scheduler</title>
+  <title>Jet - מתזמן דוא"ל</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -306,103 +306,103 @@
         <ellipse cx="30" cy="100" rx="5" ry="8" fill="#f59e0b" opacity="0.6"/>
       </svg>
       <div>
-        <h1>Jet Email Scheduler</h1>
-        <p>Schedule beautiful data-driven email reports from your datalake</p>
+        <h1>מתזמן דוא"ל Jet</h1>
+        <p>תזמן דוחות דוא"ל מבוססי נתונים יפים מאגם הנתונים שלך</p>
       </div>
     </header>
 
     <div class="card">
-      <h2>✨ Create New Configuration</h2>
+      <h2>✨ צור תצורה חדשה</h2>
       <div class="form-group">
-        <label>Configuration Label</label>
-        <input type="text" id="newConfigLabel" placeholder="e.g., Weekly Sales Report">
+        <label>תווית תצורה</label>
+        <input type="text" id="newConfigLabel" placeholder="לדוגמה: דוח מכירות שבועי">
       </div>
-      <button class="btn" onclick="createConfig()">Create Configuration</button>
+      <button class="btn" onclick="createConfig()">צור תצורה</button>
       <div id="createMessage"></div>
     </div>
 
     <div class="card">
-      <h2>📋 Email Configurations</h2>
-      <input type="text" id="searchInput" placeholder="🔍 Search configurations..." oninput="loadConfigs()">
+      <h2>📋 תצורות דוא"ל</h2>
+      <input type="text" id="searchInput" placeholder="🔍 חפש תצורות..." oninput="loadConfigs()">
       <ul class="config-list" id="configList"></ul>
     </div>
 
     <div class="card hidden" id="editorCard">
-      <h2>✏️ Edit Configuration: <span id="editingLabel" style="color:#667eea;"></span></h2>
+      <h2>✏️ ערוך תצורה: <span id="editingLabel" style="color:#667eea;"></span></h2>
       
       <div class="tabs">
-        <button class="tab active" onclick="showTab('template')">📝 Template</button>
-        <button class="tab" onclick="showTab('recipients')">👥 Recipients</button>
-        <button class="tab" onclick="showTab('aggregations')">📊 Aggregations</button>
-        <button class="tab" onclick="showTab('preview')">👁️ Preview</button>
+        <button class="tab active" onclick="showTab('template')">📝 תבנית</button>
+        <button class="tab" onclick="showTab('recipients')">👥 נמענים</button>
+        <button class="tab" onclick="showTab('aggregations')">📊 צבירות</button>
+        <button class="tab" onclick="showTab('preview')">👁️ תצוגה מקדימה</button>
       </div>
 
       <div id="templateTab">
         <div class="form-group">
-          <label>HTML Template</label>
-          <textarea id="templateContent" placeholder="<html><body>Your email content here...</body></html>"></textarea>
-          <p class="hint">💡 Use {{aggregation.LabelName}} for aggregation placeholders</p>
+          <label>תבנית HTML</label>
+          <textarea id="templateContent" placeholder="<html><body>תוכן הדוא&quot;ל שלך כאן...</body></html>"></textarea>
+          <p class="hint">💡 השתמש ב-{{aggregation.LabelName}} עבור מציינים של צבירות</p>
         </div>
-        <button class="btn" onclick="saveTemplate()">Save Template</button>
+        <button class="btn" onclick="saveTemplate()">שמור תבנית</button>
       </div>
 
       <div id="recipientsTab" class="hidden">
         <div class="form-group">
-          <label>Recipient Type</label>
+          <label>סוג נמענים</label>
           <select id="recipientType" onchange="toggleRecipientFields()">
-            <option value="manual">✉️ Manual Email List</option>
-            <option value="datalake">🗄️ Datalake Table</option>
+            <option value="manual">✉️ רשימת דוא"ל ידנית</option>
+            <option value="datalake">🗄️ טבלת אגם נתונים</option>
           </select>
         </div>
         <div id="manualFields">
           <div class="form-group">
-            <label>Email Addresses (one per line)</label>
+            <label>כתובות דוא"ל (אחת בכל שורה)</label>
             <textarea id="manualEmails" placeholder="user1@example.com&#10;user2@example.com"></textarea>
           </div>
         </div>
         <div id="datalakeFields" class="hidden">
           <div class="form-group">
-            <label>Database</label>
+            <label>מסד נתונים</label>
             <input type="text" id="recipientDb" placeholder="users">
           </div>
           <div class="form-group">
-            <label>Table</label>
+            <label>טבלה</label>
             <input type="text" id="recipientTable" placeholder="subscribers">
           </div>
           <div class="form-group">
-            <label>Email Column</label>
+            <label>עמודת דוא"ל</label>
             <input type="text" id="recipientColumn" placeholder="email">
           </div>
         </div>
-        <button class="btn" onclick="saveRecipients()">Save Recipients</button>
+        <button class="btn" onclick="saveRecipients()">שמור נמענים</button>
       </div>
 
       <div id="aggregationsTab" class="hidden">
         <div class="form-group">
-          <label>Column Name</label>
+          <label>שם עמודה</label>
           <input type="text" id="aggColumn" placeholder="revenue">
         </div>
         <div class="form-group">
-          <label>Aggregation Type</label>
+          <label>סוג צבירה</label>
           <select id="aggType">
-            <option value="sum">➕ Sum</option>
-            <option value="average">📊 Average</option>
-            <option value="count">🔢 Count</option>
-            <option value="min">⬇️ Min</option>
-            <option value="max">⬆️ Max</option>
+            <option value="sum">➕ סכום</option>
+            <option value="average">📊 ממוצע</option>
+            <option value="count">🔢 ספירה</option>
+            <option value="min">⬇️ מינימום</option>
+            <option value="max">⬆️ מקסימום</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Label (for template placeholder)</label>
-          <input type="text" id="aggLabel" placeholder="Total Revenue">
+          <label>תווית (למציין בתבנית)</label>
+          <input type="text" id="aggLabel" placeholder="סך הכנסות">
         </div>
-        <button class="btn" onclick="addAggregation()">Add Aggregation</button>
-        <h3 style="margin-top:30px;margin-bottom:15px;color:#2d3748;">Current Aggregations</h3>
+        <button class="btn" onclick="addAggregation()">הוסף צבירה</button>
+        <h3 style="margin-top:30px;margin-bottom:15px;color:#2d3748;">צבירות נוכחיות</h3>
         <ul id="aggList" class="config-list"></ul>
       </div>
 
       <div id="previewTab" class="hidden">
-        <button class="btn" onclick="loadPreview()">🚀 Generate Preview</button>
+        <button class="btn" onclick="loadPreview()">🚀 צור תצוגה מקדימה</button>
         <div id="previewContent" class="preview-box" style="margin-top:20px;"></div>
       </div>
 
@@ -421,7 +421,7 @@
       
       const list = document.getElementById('configList');
       if (configs.length === 0) {
-        list.innerHTML = '<li class="empty-state">No configurations yet. Create one above! 🚀</li>';
+        list.innerHTML = '<li class="empty-state">אין תצורות עדיין. צור אחת למעלה! 🚀</li>';
         return;
       }
       
@@ -429,11 +429,11 @@
         <li class="config-item">
           <div>
             <div class="config-label">${c.label}</div>
-            <div class="config-date">Created: ${new Date(c.createdAt).toLocaleString()}</div>
+            <div class="config-date">נוצר: ${new Date(c.createdAt).toLocaleString('he-IL')}</div>
           </div>
           <div class="config-actions">
-            <button class="btn" onclick="editConfig('${c.id}', '${c.label}')">Edit</button>
-            <button class="btn btn-secondary" onclick="deleteConfig('${c.id}')">Delete</button>
+            <button class="btn" onclick="editConfig('${c.id}', '${c.label}')">ערוך</button>
+            <button class="btn btn-secondary" onclick="deleteConfig('${c.id}')">מחק</button>
           </div>
         </li>
       `).join('');
@@ -442,7 +442,7 @@
     async function createConfig() {
       const label = document.getElementById('newConfigLabel').value;
       if (!label) {
-        showMessage('createMessage', 'Please enter a label', 'error');
+        showMessage('createMessage', 'אנא הזן תווית', 'error');
         return;
       }
       
@@ -454,7 +454,7 @@
       
       if (res.ok) {
         document.getElementById('newConfigLabel').value = '';
-        showMessage('createMessage', '✅ Configuration created!', 'success');
+        showMessage('createMessage', '✅ תצורה נוצרה!', 'success');
         loadConfigs();
       } else {
         const err = await res.json();
@@ -476,7 +476,7 @@
     }
 
     async function deleteConfig(id) {
-      if (!confirm('Delete this configuration?')) return;
+      if (!confirm('למחוק תצורה זו?')) return;
       await fetch(`/api/configurations/${id}`, { method: 'DELETE' });
       loadConfigs();
       if (currentConfigId === id) {
@@ -494,7 +494,7 @@
       });
       
       if (res.ok) {
-        showMessage('editorMessage', '✅ Template saved!', 'success');
+        showMessage('editorMessage', '✅ תבנית נשמרה!', 'success');
       } else {
         const err = await res.json();
         showMessage('editorMessage', err.error, 'error');
@@ -532,7 +532,7 @@
       });
       
       if (res.ok) {
-        showMessage('editorMessage', '✅ Recipients saved!', 'success');
+        showMessage('editorMessage', '✅ נמענים נשמרו!', 'success');
       } else {
         const err = await res.json();
         showMessage('editorMessage', err.error, 'error');
@@ -556,7 +556,7 @@
         document.getElementById('aggColumn').value = '';
         document.getElementById('aggLabel').value = '';
         loadAggregations();
-        showMessage('editorMessage', '✅ Aggregation added!', 'success');
+        showMessage('editorMessage', '✅ צבירה נוספה!', 'success');
       } else {
         const err = await res.json();
         showMessage('editorMessage', err.error, 'error');
@@ -571,19 +571,19 @@
         <li class="config-item agg-item">
           <div>
             <div class="config-label">${a.label}</div>
-            <div class="config-date">${a.type}(${a.column}) - Use: {{aggregation.${a.label}}}</div>
+            <div class="config-date">${a.type}(${a.column}) - השתמש: {{aggregation.${a.label}}}</div>
           </div>
         </li>
-      `).join('') || '<li class="empty-state">No aggregations defined yet</li>';
+      `).join('') || '<li class="empty-state">אין צבירות מוגדרות עדיין</li>';
     }
 
     async function loadPreview() {
       const res = await fetch(`/api/configurations/${currentConfigId}/preview`);
       const preview = await res.json();
       
-      let html = `<p><strong>📧 Recipients:</strong> ${preview.recipientCount}</p>`;
+      let html = `<p><strong>📧 נמענים:</strong> ${preview.recipientCount}</p>`;
       if (preview.aggregations.length) {
-        html += '<p style="margin-top:15px;"><strong>📊 Aggregations:</strong></p><ul style="margin-left:20px;margin-top:10px;">';
+        html += '<p style="margin-top:15px;"><strong>📊 צבירות:</strong></p><ul style="margin-right:20px;margin-top:10px;">';
         preview.aggregations.forEach(a => {
           html += `<li style="margin-bottom:5px;">${a.label}: <strong>${a.value}</strong></li>`;
         });

@@ -4,7 +4,7 @@
   "description": "Email scheduling system for data reports from datalake",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && xcopy /Y /I src\\public\\*.html dist\\public\\",
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
     "test": "jest",
