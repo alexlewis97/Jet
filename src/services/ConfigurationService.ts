@@ -117,6 +117,7 @@ export class ConfigurationService {
         type: agg.type,
         label: agg.label,
       })),
+      schedule: config.schedule,
     };
   }
 }

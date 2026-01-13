@@ -8,6 +8,7 @@ import {
   AggregationService,
   PreviewService,
   ConfigurationService,
+  ScheduleService,
 } from './services';
 
 const app = express();
@@ -21,6 +22,7 @@ const recipientService = new RecipientService();
 const reportService = new ReportService();
 const aggregationService = new AggregationService();
 const previewService = new PreviewService(recipientService, aggregationService);
+const scheduleService = new ScheduleService();
 const configService = new ConfigurationService(templateService, recipientService, reportService, aggregationService);
 
 // Health check
@@ -144,6 +146,55 @@ app.get('/api/configurations/:id/preview', async (req: Request, res: Response) =
     const config = configService.getConfiguration(req.params.id as string);
     const preview = await previewService.generatePreview(config);
     res.json(preview);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+});
+
+// Schedule endpoints
+app.get('/api/configurations/:id/schedule', (req: Request, res: Response) => {
+  try {
+    const schedule = scheduleService.getSchedule(req.params.id as string);
+    if (!schedule) {
+      // Create default schedule if none exists
+      const newSchedule = scheduleService.createSchedule(req.params.id as string);
+      res.json(newSchedule);
+    } else {
+      res.json(schedule);
+    }
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+});
+
+app.put('/api/configurations/:id/schedule', (req: Request, res: Response) => {
+  try {
+    const configId = req.params.id as string;
+    
+    // Ensure schedule exists
+    let schedule = scheduleService.getSchedule(configId);
+    if (!schedule) {
+      schedule = scheduleService.createSchedule(configId);
+    }
+    
+    // Update schedule
+    const updated = scheduleService.updateSchedule(configId, req.body);
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+});
+
+app.get('/api/configurations/:id/schedule/description', (req: Request, res: Response) => {
+  try {
+    const schedule = scheduleService.getSchedule(req.params.id as string);
+    if (!schedule) {
+      res.json({ description: 'לא מוגדר' });
+    } else {
+      const description = scheduleService.getScheduleDescription(schedule);
+      const cron = scheduleService.toCronExpression(schedule);
+      res.json({ description, cron });
+    }
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }

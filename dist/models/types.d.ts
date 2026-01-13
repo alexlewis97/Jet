@@ -51,6 +51,7 @@ export interface EmailConfiguration {
     recipientConfig: RecipientConfig;
     reportConfig: ReportConfig;
     aggregations: AggregationConfig[];
+    schedule?: ScheduleConfig;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -68,5 +69,18 @@ export interface AirflowConfig {
     recipientSource: RecipientConfig;
     reportTable: TableReference;
     aggregations: AggregationDef[];
+    schedule?: ScheduleConfig;
+}
+export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+export interface ScheduleConfig {
+    id: string;
+    configId: string;
+    enabled: boolean;
+    daysOfWeek: DayOfWeek[];
+    time: string;
+    datesOfMonth: number[];
+    timezone: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 //# sourceMappingURL=types.d.ts.map

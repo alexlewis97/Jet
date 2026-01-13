@@ -271,6 +271,33 @@
     .card {
       animation: fadeIn 0.3s ease-out;
     }
+    
+    .day-btn {
+      padding: 12px 20px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #2d3748;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    
+    .day-btn:hover {
+      border-color: #667eea;
+      background: #f7fafc;
+    }
+    
+    .day-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: #667eea;
+    }
+    
+    input[type="time"] {
+      font-family: inherit;
+    }
   </style>
 </head>
 <body>
@@ -333,6 +360,7 @@
       <div class="tabs">
         <button class="tab active" onclick="showTab('template')">📝 תבנית</button>
         <button class="tab" onclick="showTab('recipients')">👥 נמענים</button>
+        <button class="tab" onclick="showTab('schedule')">📅 תזמון</button>
         <button class="tab" onclick="showTab('aggregations')">📊 צבירות</button>
         <button class="tab" onclick="showTab('preview')">👁️ תצוגה מקדימה</button>
       </div>
@@ -375,6 +403,58 @@
           </div>
         </div>
         <button class="btn" onclick="saveRecipients()">שמור נמענים</button>
+      </div>
+
+      <div id="scheduleTab" class="hidden">
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" id="scheduleEnabled" onchange="saveSchedule()" style="width:auto;">
+            <span>הפעל תזמון</span>
+          </label>
+        </div>
+
+        <div id="scheduleFields" class="hidden">
+          <h3 style="margin-bottom:15px;color:#2d3748;">בחר ימים</h3>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+            <button class="day-btn" data-day="monday" onclick="toggleDay('monday')">שני</button>
+            <button class="day-btn" data-day="tuesday" onclick="toggleDay('tuesday')">שלישי</button>
+            <button class="day-btn" data-day="wednesday" onclick="toggleDay('wednesday')">רביעי</button>
+            <button class="day-btn" data-day="thursday" onclick="toggleDay('thursday')">חמישי</button>
+            <button class="day-btn" data-day="friday" onclick="toggleDay('friday')">שישי</button>
+            <button class="day-btn" data-day="saturday" onclick="toggleDay('saturday')">שבת</button>
+            <button class="day-btn" data-day="sunday" onclick="toggleDay('sunday')">ראשון</button>
+          </div>
+
+          <h3 style="margin-bottom:15px;color:#2d3748;">או בחר תאריכים בחודש</h3>
+          <div class="form-group">
+            <input type="text" id="datesOfMonth" placeholder="לדוגמה: 1,15,30 (מופרד בפסיקים)">
+            <p class="hint">💡 הזן תאריכים בין 1-31, מופרדים בפסיקים</p>
+          </div>
+
+          <div class="form-group">
+            <label>שעה</label>
+            <input type="time" id="scheduleTime" value="09:00">
+          </div>
+
+          <div class="form-group">
+            <label>אזור זמן</label>
+            <select id="scheduleTimezone">
+              <option value="UTC">UTC</option>
+              <option value="Asia/Jerusalem">ישראל (Asia/Jerusalem)</option>
+              <option value="America/New_York">ניו יורק (America/New_York)</option>
+              <option value="Europe/London">לונדון (Europe/London)</option>
+              <option value="Europe/Paris">פריז (Europe/Paris)</option>
+            </select>
+          </div>
+
+          <button class="btn" onclick="saveSchedule()">שמור תזמון</button>
+          
+          <div id="scheduleDescription" style="margin-top:20px;padding:15px;background:#f7fafc;border-radius:12px;display:none;">
+            <strong>תזמון נוכחי:</strong>
+            <p id="scheduleDescText" style="margin-top:8px;color:#2d3748;"></p>
+            <p id="scheduleCronText" style="margin-top:8px;color:#718096;font-family:monospace;font-size:13px;"></p>
+          </div>
+        </div>
       </div>
 
       <div id="aggregationsTab" class="hidden">
@@ -598,12 +678,17 @@
     }
 
     function showTab(tab) {
-      ['template', 'recipients', 'aggregations', 'preview'].forEach(t => {
+      ['template', 'recipients', 'schedule', 'aggregations', 'preview'].forEach(t => {
         document.getElementById(t + 'Tab').classList.toggle('hidden', t !== tab);
       });
       document.querySelectorAll('.tab').forEach(el => {
         el.classList.toggle('active', el.textContent.toLowerCase().includes(tab));
       });
+      
+      // Load schedule when tab is opened
+      if (tab === 'schedule') {
+        loadSchedule();
+      }
     }
 
     function showMessage(id, msg, type) {
@@ -611,6 +696,87 @@
       el.className = type;
       el.textContent = msg;
       setTimeout(() => el.textContent = '', 4000);
+    }
+
+    let selectedDays = [];
+
+    function toggleDay(day) {
+      const btn = document.querySelector(`[data-day="${day}"]`);
+      if (selectedDays.includes(day)) {
+        selectedDays = selectedDays.filter(d => d !== day);
+        btn.classList.remove('active');
+      } else {
+        selectedDays.push(day);
+        btn.classList.add('active');
+      }
+    }
+
+    async function loadSchedule() {
+      const res = await fetch(`/api/configurations/${currentConfigId}/schedule`);
+      const schedule = await res.json();
+      
+      document.getElementById('scheduleEnabled').checked = schedule.enabled;
+      document.getElementById('scheduleFields').classList.toggle('hidden', !schedule.enabled);
+      document.getElementById('scheduleTime').value = schedule.time;
+      document.getElementById('scheduleTimezone').value = schedule.timezone;
+      
+      // Set selected days
+      selectedDays = schedule.daysOfWeek || [];
+      document.querySelectorAll('.day-btn').forEach(btn => {
+        const day = btn.getAttribute('data-day');
+        btn.classList.toggle('active', selectedDays.includes(day));
+      });
+      
+      // Set dates of month
+      if (schedule.datesOfMonth && schedule.datesOfMonth.length > 0) {
+        document.getElementById('datesOfMonth').value = schedule.datesOfMonth.join(',');
+      }
+      
+      // Load description
+      if (schedule.enabled) {
+        loadScheduleDescription();
+      }
+    }
+
+    async function saveSchedule() {
+      const enabled = document.getElementById('scheduleEnabled').checked;
+      document.getElementById('scheduleFields').classList.toggle('hidden', !enabled);
+      
+      const datesInput = document.getElementById('datesOfMonth').value;
+      const datesOfMonth = datesInput ? datesInput.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d)) : [];
+      
+      const body = {
+        enabled,
+        daysOfWeek: selectedDays,
+        time: document.getElementById('scheduleTime').value,
+        datesOfMonth,
+        timezone: document.getElementById('scheduleTimezone').value
+      };
+      
+      const res = await fetch(`/api/configurations/${currentConfigId}/schedule`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      if (res.ok) {
+        showMessage('editorMessage', '✅ תזמון נשמר!', 'success');
+        if (enabled) {
+          loadScheduleDescription();
+        }
+      } else {
+        const err = await res.json();
+        showMessage('editorMessage', err.error, 'error');
+      }
+    }
+
+    async function loadScheduleDescription() {
+      const res = await fetch(`/api/configurations/${currentConfigId}/schedule/description`);
+      const data = await res.json();
+      
+      document.getElementById('scheduleDescription').style.display = 'block';
+      document.getElementById('scheduleDescText').textContent = data.description;
+      document.getElementById('scheduleCronText').textContent = data.cron ? `Cron: ${data.cron}` : '';
     }
 
     loadConfigs();
