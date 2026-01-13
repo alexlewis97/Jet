@@ -138,8 +138,13 @@ app.get('/api/configurations/:id/preview', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-const PORT = 3002;
-app.listen(PORT, () => {
-    console.log(`Jet Email Scheduler running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 3002;
+// Only start server if not in Vercel environment
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log(`Jet Email Scheduler running on http://localhost:${PORT}`);
+    });
+}
+// Export for Vercel
+exports.default = app;
 //# sourceMappingURL=server.js.map
