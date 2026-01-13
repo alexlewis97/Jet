@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jet - Email Scheduler</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container { 
+      max-width: 1400px; 
+      margin: 0 auto; 
+    }
+    
+    header { 
+      background: white;
+      color: #1a202c;
+      padding: 30px 40px;
+      margin-bottom: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .jet-icon {
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+    }
+    
+    header h1 { 
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    header p { 
+      color: #718096;
+      margin-top: 8px;
+      font-size: 16px;
+    }
+    
+    .card { 
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    }
+    
+    .card h2 { 
+      margin-bottom: 20px;
+      color: #1a202c;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .btn { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary { 
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    }
+    
+    .btn-secondary:hover { 
+      box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+    }
+    
+    input, textarea, select { 
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    textarea { 
+      min-height: 180px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .config-list { 
+      list-style: none;
+    }
+    
+    .config-item { 
+      padding: 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+      background: #fafafa;
+    }
+    
+    .config-item:hover { 
+      background: #f7fafc;
+      border-color: #cbd5e0;
+      transform: translateX(5px);
+    }
+    
+    .config-label { 
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 16px;
+    }
+    
+    .config-date { 
+      color: #a0aec0;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+    
+    .config-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .tabs { 
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0;
+    }
+    
+    .tab { 
+      padding: 14px 24px;
+      background: transparent;
+      border-radius: 12px 12px 0 0;
+      cursor: pointer;
+      font-weight: 600;
+      color: #718096;
+      transition: all 0.2s;
+      border: none;
+      position: relative;
+      bottom: -2px;
+    }
+    
+    .tab:hover {
+      color: #667eea;
+      background: #f7fafc;
+    }
+    
+    .tab.active { 
+      color: #667eea;
+      background: white;
+      border-bottom: 3px solid #667eea;
+    }
+    
+    .hidden { 
+      display: none;
+    }
+    
+    .form-group { 
+      margin-bottom: 20px;
+    }
+    
+    .form-group label { 
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 14px;
+    }
+    
+    .preview-box { 
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 25px;
+      min-height: 250px;
+      line-height: 1.6;
+    }
+    
+    .error { 
+      color: #e53e3e;
+      background: #fff5f5;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border-left: 4px solid #e53e3e;
+      font-weight: 500;
+    }
+    
+    .success { 
+      color: #38a169;
+      background: #f0fff4;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border-left: 4px solid #38a169;
+      font-weight: 500;
+    }
+    
+    .hint {
+      color: #718096;
+      font-size: 13px;
+      margin-top: 6px;
+      font-style: italic;
+    }
+    
+    .agg-item {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border: 2px solid #667eea30;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #a0aec0;
+      font-style: italic;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <svg class="jet-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cute cartoon jet -->
+        <defs>
+          <linearGradient id="jetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <!-- Jet body -->
+        <ellipse cx="100" cy="100" rx="70" ry="35" fill="url(#jetGradient)"/>
+        <!-- Jet nose -->
+        <path d="M 170 100 Q 190 100 185 100 Q 190 100 185 105 L 170 100 Z" fill="#5568d3"/>
+        <!-- Wings -->
+        <ellipse cx="90" cy="100" rx="45" ry="15" fill="#8b9bea" opacity="0.8"/>
+        <!-- Tail -->
+        <path d="M 30 100 L 20 85 L 35 100 L 20 115 Z" fill="#8b9bea"/>
+        <!-- Window -->
+        <circle cx="120" cy="95" r="12" fill="#e0e7ff"/>
+        <circle cx="120" cy="95" r="8" fill="#4c51bf"/>
+        <!-- Cute face on window -->
+        <circle cx="117" cy="93" r="2" fill="white"/>
+        <circle cx="123" cy="93" r="2" fill="white"/>
+        <path d="M 115 98 Q 120 101 125 98" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- Engine -->
+        <ellipse cx="50" cy="100" rx="15" ry="20" fill="#5568d3"/>
+        <!-- Exhaust -->
+        <ellipse cx="35" cy="100" rx="8" ry="12" fill="#fbbf24" opacity="0.7"/>
+        <ellipse cx="30" cy="100" rx="5" ry="8" fill="#f59e0b" opacity="0.6"/>
+      </svg>
+      <div>
+        <h1>Jet Email Scheduler</h1>
+        <p>Schedule beautiful data-driven email reports from your datalake</p>
+      </div>
+    </header>
+
+    <div class="card">
+      <h2>✨ Create New Configuration</h2>
+      <div class="form-group">
+        <label>Configuration Label</label>
+        <input type="text" id="newConfigLabel" placeholder="e.g., Weekly Sales Report">
+      </div>
+      <button class="btn" onclick="createConfig()">Create Configuration</button>
+      <div id="createMessage"></div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Email Configurations</h2>
+      <input type="text" id="searchInput" placeholder="🔍 Search configurations..." oninput="loadConfigs()">
+      <ul class="config-list" id="configList"></ul>
+    </div>
+
+    <div class="card hidden" id="editorCard">
+      <h2>✏️ Edit Configuration: <span id="editingLabel" style="color:#667eea;"></span></h2>
+      
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('template')">📝 Template</button>
+        <button class="tab" onclick="showTab('recipients')">👥 Recipients</button>
+        <button class="tab" onclick="showTab('aggregations')">📊 Aggregations</button>
+        <button class="tab" onclick="showTab('preview')">👁️ Preview</button>
+      </div>
+
+      <div id="templateTab">
+        <div class="form-group">
+          <label>HTML Template</label>
+          <textarea id="templateContent" placeholder="<html><body>Your email content here...</body></html>"></textarea>
+          <p class="hint">💡 Use {{aggregation.LabelName}} for aggregation placeholders</p>
+        </div>
+        <button class="btn" onclick="saveTemplate()">Save Template</button>
+      </div>
+
+      <div id="recipientsTab" class="hidden">
+        <div class="form-group">
+          <label>Recipient Type</label>
+          <select id="recipientType" onchange="toggleRecipientFields()">
+            <option value="manual">✉️ Manual Email List</option>
+            <option value="datalake">🗄️ Datalake Table</option>
+          </select>
+        </div>
+        <div id="manualFields">
+          <div class="form-group">
+            <label>Email Addresses (one per line)</label>
+            <textarea id="manualEmails" placeholder="user1@example.com&#10;user2@example.com"></textarea>
+          </div>
+        </div>
+        <div id="datalakeFields" class="hidden">
+          <div class="form-group">
+            <label>Database</label>
+            <input type="text" id="recipientDb" placeholder="users">
+          </div>
+          <div class="form-group">
+            <label>Table</label>
+            <input type="text" id="recipientTable" placeholder="subscribers">
+          </div>
+          <div class="form-group">
+            <label>Email Column</label>
+            <input type="text" id="recipientColumn" placeholder="email">
+          </div>
+        </div>
+        <button class="btn" onclick="saveRecipients()">Save Recipients</button>
+      </div>
+
+      <div id="aggregationsTab" class="hidden">
+        <div class="form-group">
+          <label>Column Name</label>
+          <input type="text" id="aggColumn" placeholder="revenue">
+        </div>
+        <div class="form-group">
+          <label>Aggregation Type</label>
+          <select id="aggType">
+            <option value="sum">➕ Sum</option>
+            <option value="average">📊 Average</option>
+            <option value="count">🔢 Count</option>
+            <option value="min">⬇️ Min</option>
+            <option value="max">⬆️ Max</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Label (for template placeholder)</label>
+          <input type="text" id="aggLabel" placeholder="Total Revenue">
+        </div>
+        <button class="btn" onclick="addAggregation()">Add Aggregation</button>
+        <h3 style="margin-top:30px;margin-bottom:15px;color:#2d3748;">Current Aggregations</h3>
+        <ul id="aggList" class="config-list"></ul>
+      </div>
+
+      <div id="previewTab" class="hidden">
+        <button class="btn" onclick="loadPreview()">🚀 Generate Preview</button>
+        <div id="previewContent" class="preview-box" style="margin-top:20px;"></div>
+      </div>
+
+      <div id="editorMessage" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentConfigId = null;
+
+    async function loadConfigs() {
+      const search = document.getElementById('searchInput').value;
+      const url = search ? `/api/configurations?search=${encodeURIComponent(search)}` : '/api/configurations';
+      const res = await fetch(url);
+      const configs = await res.json();
+      
+      const list = document.getElementById('configList');
+      if (configs.length === 0) {
+        list.innerHTML = '<li class="empty-state">No configurations yet. Create one above! 🚀</li>';
+        return;
+      }
+      
+      list.innerHTML = configs.map(c => `
+        <li class="config-item">
+          <div>
+            <div class="config-label">${c.label}</div>
+            <div class="config-date">Created: ${new Date(c.createdAt).toLocaleString()}</div>
+          </div>
+          <div class="config-actions">
+            <button class="btn" onclick="editConfig('${c.id}', '${c.label}')">Edit</button>
+            <button class="btn btn-secondary" onclick="deleteConfig('${c.id}')">Delete</button>
+          </div>
+        </li>
+      `).join('');
+    }
+
+    async function createConfig() {
+      const label = document.getElementById('newConfigLabel').value;
+      if (!label) {
+        showMessage('createMessage', 'Please enter a label', 'error');
+        return;
+      }
+      
+      const res = await fetch('/api/configurations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label })
+      });
+      
+      if (res.ok) {
+        document.getElementById('newConfigLabel').value = '';
+        showMessage('createMessage', '✅ Configuration created!', 'success');
+        loadConfigs();
+      } else {
+        const err = await res.json();
+        showMessage('createMessage', err.error, 'error');
+      }
+    }
+
+    async function editConfig(id, label) {
+      currentConfigId = id;
+      document.getElementById('editingLabel').textContent = label;
+      document.getElementById('editorCard').classList.remove('hidden');
+      document.getElementById('editorCard').scrollIntoView({ behavior: 'smooth' });
+      
+      const res = await fetch(`/api/configurations/${id}`);
+      const config = await res.json();
+      document.getElementById('templateContent').value = config.template?.content || '';
+      
+      loadAggregations();
+    }
+
+    async function deleteConfig(id) {
+      if (!confirm('Delete this configuration?')) return;
+      await fetch(`/api/configurations/${id}`, { method: 'DELETE' });
+      loadConfigs();
+      if (currentConfigId === id) {
+        document.getElementById('editorCard').classList.add('hidden');
+        currentConfigId = null;
+      }
+    }
+
+    async function saveTemplate() {
+      const content = document.getElementById('templateContent').value;
+      const res = await fetch(`/api/configurations/${currentConfigId}/template`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      
+      if (res.ok) {
+        showMessage('editorMessage', '✅ Template saved!', 'success');
+      } else {
+        const err = await res.json();
+        showMessage('editorMessage', err.error, 'error');
+      }
+    }
+
+    function toggleRecipientFields() {
+      const type = document.getElementById('recipientType').value;
+      document.getElementById('manualFields').classList.toggle('hidden', type !== 'manual');
+      document.getElementById('datalakeFields').classList.toggle('hidden', type !== 'datalake');
+    }
+
+    async function saveRecipients() {
+      const type = document.getElementById('recipientType').value;
+      let body;
+      
+      if (type === 'manual') {
+        const emails = document.getElementById('manualEmails').value.split('\n').filter(e => e.trim());
+        body = { type, emails };
+      } else {
+        body = {
+          type,
+          tableReference: {
+            database: document.getElementById('recipientDb').value,
+            table: document.getElementById('recipientTable').value,
+            emailColumn: document.getElementById('recipientColumn').value
+          }
+        };
+      }
+      
+      const res = await fetch(`/api/configurations/${currentConfigId}/recipients`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      if (res.ok) {
+        showMessage('editorMessage', '✅ Recipients saved!', 'success');
+      } else {
+        const err = await res.json();
+        showMessage('editorMessage', err.error, 'error');
+      }
+    }
+
+    async function addAggregation() {
+      const body = {
+        column: document.getElementById('aggColumn').value,
+        type: document.getElementById('aggType').value,
+        label: document.getElementById('aggLabel').value
+      };
+      
+      const res = await fetch(`/api/configurations/${currentConfigId}/aggregations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      if (res.ok) {
+        document.getElementById('aggColumn').value = '';
+        document.getElementById('aggLabel').value = '';
+        loadAggregations();
+        showMessage('editorMessage', '✅ Aggregation added!', 'success');
+      } else {
+        const err = await res.json();
+        showMessage('editorMessage', err.error, 'error');
+      }
+    }
+
+    async function loadAggregations() {
+      const res = await fetch(`/api/configurations/${currentConfigId}/aggregations`);
+      const aggs = await res.json();
+      
+      document.getElementById('aggList').innerHTML = aggs.map(a => `
+        <li class="config-item agg-item">
+          <div>
+            <div class="config-label">${a.label}</div>
+            <div class="config-date">${a.type}(${a.column}) - Use: {{aggregation.${a.label}}}</div>
+          </div>
+        </li>
+      `).join('') || '<li class="empty-state">No aggregations defined yet</li>';
+    }
+
+    async function loadPreview() {
+      const res = await fetch(`/api/configurations/${currentConfigId}/preview`);
+      const preview = await res.json();
+      
+      let html = `<p><strong>📧 Recipients:</strong> ${preview.recipientCount}</p>`;
+      if (preview.aggregations.length) {
+        html += '<p style="margin-top:15px;"><strong>📊 Aggregations:</strong></p><ul style="margin-left:20px;margin-top:10px;">';
+        preview.aggregations.forEach(a => {
+          html += `<li style="margin-bottom:5px;">${a.label}: <strong>${a.value}</strong></li>`;
+        });
+        html += '</ul>';
+      }
+      if (preview.errors.length) {
+        html += `<div class="error" style="margin-top:15px;">${preview.errors.join('<br>')}</div>`;
+      }
+      html += '<hr style="margin:20px 0;border:none;border-top:2px solid #e2e8f0;"><div style="background:white;padding:20px;border-radius:12px;border:2px solid #e2e8f0;">' + preview.renderedHtml + '</div>';
+      
+      document.getElementById('previewContent').innerHTML = html;
+    }
+
+    function showTab(tab) {
+      ['template', 'recipients', 'aggregations', 'preview'].forEach(t => {
+        document.getElementById(t + 'Tab').classList.toggle('hidden', t !== tab);
+      });
+      document.querySelectorAll('.tab').forEach(el => {
+        el.classList.toggle('active', el.textContent.toLowerCase().includes(tab));
+      });
+    }
+
+    function showMessage(id, msg, type) {
+      const el = document.getElementById(id);
+      el.className = type;
+      el.textContent = msg;
+      setTimeout(() => el.textContent = '', 4000);
+    }
+
+    loadConfigs();
+  </script>
+</body>
+</html>
